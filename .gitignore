@@ -1,1 +1,58 @@
+# ===============================
+#   Arquivos de editor / IDE
+# ===============================
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# ===============================
+#   Arquivos de build
+# ===============================
+/build/
+/dist/
+/bin/
+/obj/
+
+# ===============================
+#   Compilação C
+# ===============================
+*.o
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+*.gch
+
+# Arquivos gerados pelo Makefile
+Makefile.in
+Makefile.local
+
+# ===============================
+#   Backups e temporários
+# ===============================
+*~
+*.tmp
+*.log
+*.bak
+
+# ===============================
+#   Arquivos de sistema
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+#   Arquivos do compilador
+# ===============================
+*.dSYM/
+*.pch
+
+# ===============================
+#   Arquivos de testes
+# ===============================
+*.gcda
+*.gcno
+*.gcov
