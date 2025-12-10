@@ -1,8 +1,15 @@
-#include <ncurses.h>
+#ifdef _WIN32
+#include <curses.h>   // PDCurses no Windows
+#else
+#include <ncurses.h>  // ncurses no Linux
+#endif
+
 #include "interface.h"
 #include "cliente.h"
 #include "produto.h"
 #include "pedido.h"
+
+
 
 void mostrarMenuClientes() {
     // placeholder
