@@ -9,10 +9,10 @@
 # ===============================
 #   Arquivos de build
 # ===============================
-/build/
-/dist/
-/bin/
-/obj/
+build/
+dist/
+bin/
+obj/
 
 # ===============================
 #   Compilação C
@@ -56,3 +56,10 @@ Thumbs.db
 *.gcda
 *.gcno
 *.gcov
+
+# ===============================
+#   Diretórios e arquivos extras do projeto
+# ===============================
+# Evita subir executáveis gerados dentro de src/
+src/*.o
+src/scp
