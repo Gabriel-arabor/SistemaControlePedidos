@@ -1,16 +1,30 @@
 #ifndef PRODUTO_H
 #define PRODUTO_H
 
-typedef struct 
-{
+#define PROD_NOME_MAX 100
+
+typedef struct {
     int id;
-    
-    char nome[100];
+    char nome[PROD_NOME_MAX];
     float preco;
+    int estoque;
 } Produto;
 
-void inserirProduto();
-void listarProdutos();
-void removerProduto();
+typedef struct {
+    Produto *data;
+    int size;
+    int capacity;
+} ListaProdutos;
+
+/* Funções */
+void initProdutos(ListaProdutos *l);
+void freeProdutos(ListaProdutos *l);
+int carregarProdutosCSV(ListaProdutos *l, const char *path);
+int salvarProdutosCSV(ListaProdutos *l, const char *path);
+int adicionarProduto(ListaProdutos *l, const Produto *p);
+int removerProdutoById(ListaProdutos *l, int id);
+Produto *buscarProdutoById(ListaProdutos *l, int id);
+void listarProdutos(ListaProdutos *l);
+int nextIdProduto(ListaProdutos *l);
 
 #endif
