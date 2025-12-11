@@ -1,6 +1,7 @@
 #include "interface.h"
 #include <ncurses.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 /*
@@ -142,22 +143,253 @@ void mostrarMenuClientes(ListaClientes *clientes) {
 
 
 void mostrarMenuProdutos(ListaProdutos *produtos) {
-    clear();
-    mvprintw(1, 2, "=== Menu de Produtos ===");
-    mvprintw(3, 4, "Total de produtos carregados: %d", produtos->size);
-    mvprintw(5, 2, "Pressione qualquer tecla para voltar...");
-    refresh();
-    getch();
+    int opcao;
+
+    do {
+        clear();
+        mvprintw(1, 2, "=== Manter Produtos ===");
+        mvprintw(3, 4, "1 - Cadastrar produto");
+        mvprintw(4, 4, "2 - Remover produto");
+        mvprintw(5, 4, "3 - Consultar produto");
+        mvprintw(6, 4, "4 - Listar produtos");
+        mvprintw(8, 4, "0 - Voltar");
+        mvprintw(10, 2, "Escolha uma opcao: ");
+        refresh();
+
+        opcao = getch();
+
+        switch (opcao) {
+
+        case '1': { // Cadastrar
+            Produto p;
+            p.id = nextIdProduto(produtos);
+
+            clear();
+            mvprintw(1, 2, "=== Cadastrar Produto ===");
+
+            mvprintw(3, 2, "Nome");
+            lerString(3, 8, p.nome, PROD_NOME_MAX);
+
+            mvprintw(4, 2, "Preco");
+            char bufPreco[20];
+            lerString(4, 9, bufPreco, 20);
+            p.preco = atof(bufPreco);
+
+            mvprintw(5, 2, "Estoque");
+            p.estoque = lerInt(5, 11);
+
+            adicionarProduto(produtos, &p);
+
+            mvprintw(7, 2, "Produto cadastrado com sucesso! ID = %d", p.id);
+            mvprintw(9, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '2': { // Remover
+            clear();
+            mvprintw(1, 2, "=== Remover Produto ===");
+            mvprintw(3, 2, "Informe o ID do produto");
+            int id = lerInt(3, 28);
+
+            if (removerProdutoById(produtos, id) == 0)
+                mvprintw(5, 2, "Produto removido com sucesso!");
+            else
+                mvprintw(5, 2, "Produto nao encontrado!");
+
+            mvprintw(7, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '3': { // Consultar
+            clear();
+            mvprintw(1, 2, "=== Consultar Produto ===");
+            mvprintw(3, 2, "Informe o ID do produto");
+            int id = lerInt(3, 28);
+
+            Produto *p = buscarProdutoById(produtos, id);
+            if (p) {
+                mvprintw(5, 2, "ID: %d", p->id);
+                mvprintw(6, 2, "Nome: %s", p->nome);
+                mvprintw(7, 2, "Preco: %.2f", p->preco);
+                mvprintw(8, 2, "Estoque: %d", p->estoque);
+            } else {
+                mvprintw(5, 2, "Produto nao encontrado!");
+            }
+
+            mvprintw(10, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '4': { // Listar
+            clear();
+            mvprintw(1, 2, "=== Lista de Produtos ===");
+
+            int y = 3;
+            for (int i = 0; i < produtos->size; i++) {
+                Produto *p = &produtos->data[i];
+                mvprintw(y++, 2, "ID:%d | %s | R$ %.2f | Estoque:%d",
+                         p->id, p->nome, p->preco, p->estoque);
+            }
+
+            if (produtos->size == 0)
+                mvprintw(3, 2, "Nenhum produto cadastrado.");
+
+            mvprintw(y + 2, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '0':
+            break;
+
+        default:
+            mvprintw(12, 2, "Opcao invalida!");
+            refresh();
+            getch();
+        }
+
+    } while (opcao != '0');
 }
 
+
 void mostrarMenuPedidos(ListaPedidos *pedidos) {
-    clear();
-    mvprintw(1, 2, "=== Menu de Pedidos ===");
-    mvprintw(3, 4, "Total de pedidos carregados: %d", pedidos->size);
-    mvprintw(5, 2, "Pressione qualquer tecla para voltar...");
-    refresh();
-    getch();
+    int opcao;
+
+    do {
+        clear();
+        mvprintw(1, 2, "=== Manter Pedidos ===");
+        mvprintw(3, 4, "1 - Cadastrar pedido");
+        mvprintw(4, 4, "2 - Remover pedido");
+        mvprintw(5, 4, "3 - Consultar pedido");
+        mvprintw(6, 4, "4 - Listar pedidos");
+        mvprintw(8, 4, "0 - Voltar");
+        mvprintw(10, 2, "Escolha uma opcao: ");
+        refresh();
+
+        opcao = getch();
+
+        switch (opcao) {
+
+        case '1': { // Cadastrar pedido
+            Pedido p;
+            p.id = pedidos->size + 1;   // simples e suficiente
+            p.qtdItens = 0;
+            strcpy(p.status, "Aberto");
+
+            clear();
+            mvprintw(1, 2, "=== Cadastrar Pedido ===");
+
+            mvprintw(3, 2, "ID do cliente");
+            p.clienteId = lerInt(3, 18);
+
+            char resp;
+            do {
+                mvprintw(5 + p.qtdItens, 2, "ID do produto");
+                p.itens[p.qtdItens].produtoId = lerInt(5 + p.qtdItens, 18);
+
+                mvprintw(6 + p.qtdItens, 2, "Quantidade");
+                p.itens[p.qtdItens].quantidade = lerInt(6 + p.qtdItens, 18);
+
+                p.qtdItens++;
+
+                mvprintw(8 + p.qtdItens, 2, "Adicionar outro produto? (s/n)");
+                resp = getch();
+
+            } while ((resp == 's' || resp == 'S') && p.qtdItens < MAX_ITENS_PEDIDO);
+
+            adicionarPedido(pedidos, &p);
+
+            mvprintw(10 + p.qtdItens, 2, "Pedido cadastrado com sucesso!");
+            mvprintw(12 + p.qtdItens, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '2': { // Remover pedido
+            clear();
+            mvprintw(1, 2, "=== Remover Pedido ===");
+            mvprintw(3, 2, "Informe o ID do pedido");
+            int id = lerInt(3, 22);
+
+            if (removerPedidoById(pedidos, id) == 0)
+                mvprintw(5, 2, "Pedido removido com sucesso!");
+            else
+                mvprintw(5, 2, "Pedido nao encontrado!");
+
+            mvprintw(7, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '3': { // Consultar pedido
+            clear();
+            mvprintw(1, 2, "=== Consultar Pedido ===");
+            mvprintw(3, 2, "Informe o ID do pedido");
+            int id = lerInt(3, 22);
+
+            Pedido *p = buscarPedidoById(pedidos, id);
+            if (p) {
+                mvprintw(5, 2, "Pedido ID: %d", p->id);
+                mvprintw(6, 2, "Cliente ID: %d", p->clienteId);
+                mvprintw(7, 2, "Status: %s", p->status);
+
+                int y = 9;
+                for (int i = 0; i < p->qtdItens; i++) {
+                    mvprintw(y++, 4, "Produto %d | Qtd %d",
+                             p->itens[i].produtoId,
+                             p->itens[i].quantidade);
+                }
+            } else {
+                mvprintw(5, 2, "Pedido nao encontrado!");
+            }
+
+            mvprintw(12, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '4': { // Listar pedidos
+            clear();
+            mvprintw(1, 2, "=== Lista de Pedidos ===");
+
+            int y = 3;
+            for (int i = 0; i < pedidos->size; i++) {
+                Pedido *p = &pedidos->data[i];
+                mvprintw(y++, 2, "Pedido %d | Cliente %d | Itens %d",
+                         p->id, p->clienteId, p->qtdItens);
+            }
+
+            if (pedidos->size == 0)
+                mvprintw(3, 2, "Nenhum pedido cadastrado.");
+
+            mvprintw(y + 2, 2, "Pressione qualquer tecla...");
+            refresh();
+            getch();
+            break;
+        }
+
+        case '0':
+            break;
+
+        default:
+            mvprintw(12, 2, "Opcao invalida!");
+            refresh();
+            getch();
+        }
+
+    } while (opcao != '0');
 }
+
 
 void mostrarMenuPrincipal(ListaClientes *clientes, ListaProdutos *produtos, ListaPedidos *pedidos) {
     int opcao;
