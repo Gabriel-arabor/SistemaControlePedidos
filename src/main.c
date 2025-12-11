@@ -15,12 +15,10 @@ int main(void) {
     initProdutos(&produtos);
     initPedidos(&pedidos);
 
-    /* carregar arquivos (se caminhos diferentes, ajuste) */
     carregarClientesCSV(&clientes, "data/Clientes.csv");
     carregarProdutosCSV(&produtos, "data/Produtos.csv");
     carregarPedidosCSV(&pedidos, "data/Pedidos.csv");
 
-    /* adaptar mostrarMenuPrincipal para aceitar ponteiros às listas */
     mostrarMenuPrincipal(&clientes, &produtos, &pedidos);
 
     /* ao sair, salvar tudo */
