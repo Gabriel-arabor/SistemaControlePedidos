@@ -5,7 +5,7 @@
 #include "produto.h"
 #include "pedido.h"
 
-// Funções de persistência centralizadas
+// Funções de persistência 
 int carregarClientesCSV(ListaClientes *l, const char *path);
 int salvarClientesCSV(ListaClientes *l, const char *path);
 

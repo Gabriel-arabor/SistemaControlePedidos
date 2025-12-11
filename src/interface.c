@@ -3,21 +3,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-/*
- * Por enquanto, os menus de Clientes, Produtos e Pedidos
- * são apenas "placeholders" para testar a integração.
- * Depois você pode implementar o CRUD completo aqui.
- */
-
-static void lerString(int y, int x, char *buffer, int tamanho) {
+static void lerString(int y, int x, char *buffer, int tamanho) //função auxiliar
+{
     mvprintw(y, x, "> ");
     echo();
     getnstr(buffer, tamanho - 1);
     noecho();
 }
 
-static int lerInt(int y, int x) {
+static int lerInt(int y, int x) //função aux
+{
     char buffer[16];
     mvprintw(y, x, "> ");
     echo();
@@ -27,7 +22,8 @@ static int lerInt(int y, int x) {
 }
 
 
-void mostrarMenuClientes(ListaClientes *clientes) {
+void mostrarMenuClientes(ListaClientes *clientes) 
+{
     int opcao;
 
     do {
@@ -43,11 +39,13 @@ void mostrarMenuClientes(ListaClientes *clientes) {
 
         opcao = getch();
 
-        switch (opcao) {
+        switch (opcao) 
+        {
 
-        case '1': { // Cadastrar
+        case '1': // Cadastrar
+        { 
             Cliente c;
-            c.id = nextIdCliente(clientes);
+            c.id = ProximoIdCliente(clientes);
 
             clear();
             mvprintw(1, 2, "=== Cadastrar Cliente ===");
@@ -87,14 +85,16 @@ void mostrarMenuClientes(ListaClientes *clientes) {
             break;
         }
 
-        case '3': { // Consultar
+        case '3': // Consultar
+        { 
             clear();
             mvprintw(1, 2, "=== Consultar Cliente ===");
             mvprintw(3, 2, "Informe o ID do cliente");
             int id = lerInt(3, 28);
 
             Cliente *c = buscarClienteById(clientes, id);
-            if (c) {
+            if (c) 
+            {
                 mvprintw(5, 2, "ID: %d", c->id);
                 mvprintw(6, 2, "Nome: %s", c->nome);
                 mvprintw(7, 2, "CPF: %s", c->cpf);
@@ -109,18 +109,20 @@ void mostrarMenuClientes(ListaClientes *clientes) {
             break;
         }
 
-        case '4': { // Listar
+        case '4': // Listar
+        { 
             clear();
             mvprintw(1, 2, "=== Lista de Clientes ===");
 
             int y = 3;
-            for (int i = 0; i < clientes->size; i++) {
-                Cliente *c = &clientes->data[i];
+            for (int i = 0; i < clientes->quantos_existem; i++) 
+            {
+                Cliente *c = &clientes->vet_clientes[i];
                 mvprintw(y++, 2, "ID:%d | %s | %s | %s",
                           c->id, c->nome, c->cpf, c->telefone);
             }
 
-            if (clientes->size == 0)
+            if (clientes->quantos_existem == 0)
                 mvprintw(3, 2, "Nenhum cliente cadastrado.");
 
             mvprintw(y + 2, 2, "Pressione qualquer tecla...");
@@ -231,13 +233,13 @@ void mostrarMenuProdutos(ListaProdutos *produtos) {
             mvprintw(1, 2, "=== Lista de Produtos ===");
 
             int y = 3;
-            for (int i = 0; i < produtos->size; i++) {
-                Produto *p = &produtos->data[i];
+            for (int i = 0; i < produtos->tamanho; i++) {
+                Produto *p = &produtos->vet_produtos[i];
                 mvprintw(y++, 2, "ID:%d | %s | R$ %.2f | Estoque:%d",
                          p->id, p->nome, p->preco, p->estoque);
             }
 
-            if (produtos->size == 0)
+            if (produtos->tamanho == 0)
                 mvprintw(3, 2, "Nenhum produto cadastrado.");
 
             mvprintw(y + 2, 2, "Pressione qualquer tecla...");
@@ -279,7 +281,7 @@ void mostrarMenuPedidos(ListaPedidos *pedidos) {
 
         case '1': { // Cadastrar pedido
             Pedido p;
-            p.id = pedidos->size + 1;   // simples e suficiente
+            p.id = pedidos->tamanho + 1;   // simples e suficiente
             p.qtdItens = 0;
             strcpy(p.status, "Aberto");
 
@@ -363,13 +365,13 @@ void mostrarMenuPedidos(ListaPedidos *pedidos) {
             mvprintw(1, 2, "=== Lista de Pedidos ===");
 
             int y = 3;
-            for (int i = 0; i < pedidos->size; i++) {
-                Pedido *p = &pedidos->data[i];
+            for (int i = 0; i < pedidos->tamanho; i++) {
+                Pedido *p = &pedidos->lista_pedidos[i];
                 mvprintw(y++, 2, "Pedido %d | Cliente %d | Itens %d",
                          p->id, p->clienteId, p->qtdItens);
             }
 
-            if (pedidos->size == 0)
+            if (pedidos->tamanho == 0)
                 mvprintw(3, 2, "Nenhum pedido cadastrado.");
 
             mvprintw(y + 2, 2, "Pressione qualquer tecla...");

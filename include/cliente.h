@@ -7,17 +7,19 @@
 #define TELEFONE_MAX 30
 #define CPF_MAX 20
 
-typedef struct {
+typedef struct 
+{
     int id;
     char nome[NOME_MAX];
     char cpf[CPF_MAX];
     char telefone[TELEFONE_MAX];
 } Cliente;
 
-typedef struct {
-    Cliente *data;
-    int size;
-    int capacity;
+typedef struct 
+{
+    Cliente *vet_clientes;
+    int quantos_existem;
+    int capacidade;
 } ListaClientes;
 
 /* Funções */
@@ -29,6 +31,6 @@ int adicionarCliente(ListaClientes *l, const Cliente *c);
 int removerClienteById(ListaClientes *l, int id);
 Cliente *buscarClienteById(ListaClientes *l, int id);
 void listarClientes(ListaClientes *l);
-int nextIdCliente(ListaClientes *l);
+int ProximoIdCliente(ListaClientes *l);
 
 #endif

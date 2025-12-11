@@ -11,9 +11,9 @@ typedef struct {
 } Produto;
 
 typedef struct {
-    Produto *data;
-    int size;
-    int capacity;
+    Produto *vet_produtos;
+    int tamanho;
+    int capacidade;
 } ListaProdutos;
 
 /* Funções */

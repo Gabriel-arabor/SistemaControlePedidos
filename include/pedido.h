@@ -21,9 +21,9 @@ typedef struct {
 } Pedido;
 
 typedef struct {
-    Pedido *data;
-    int size;
-    int capacity;
+    Pedido *lista_pedidos;
+    int tamanho;
+    int capacidade;
 } ListaPedidos;
 
 /* Funções */

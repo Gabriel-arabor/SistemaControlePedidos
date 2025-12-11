@@ -3,76 +3,99 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void ensureCapacityClientes(ListaClientes *l) {
-    if (l->size >= l->capacity) {
-        int newCap = l->capacity == 0 ? 8 : l->capacity * 2;
-        Cliente *tmp = realloc(l->data, newCap * sizeof(Cliente));
-        if (!tmp) {
+static void teste_de_capacidade_lista_clientes(ListaClientes *l) //testa a capacidade para ver se há lugar no vetor.
+{
+    if (l->quantos_existem >= l->capacidade) 
+    {
+        int novoTamanho = l->capacidade == 0 ? 8 : l->capacidade * 2;
+        Cliente *tmp = realloc(l->vet_clientes, novoTamanho * sizeof(Cliente));
+        if (!tmp) 
+        {
             fprintf(stderr, "ERRO: realloc clientes\n");
             exit(EXIT_FAILURE);
         }
-        l->data = tmp;
-        l->capacity = newCap;
+        l->vet_clientes = tmp;
+        l->capacidade = novoTamanho;
     }
 }
 
-void initClientes(ListaClientes *l) {
-    l->data = NULL;
-    l->size = 0;
-    l->capacity = 0;
+void initClientes(ListaClientes *l) //função para inicializar a lista vazia
+{
+    l->vet_clientes = NULL;
+    l->quantos_existem = 0;
+    l->capacidade = 0;
 }
 
-void freeClientes(ListaClientes *l) {
-    free(l->data);
-    l->data = NULL;
-    l->size = 0;
-    l->capacity = 0;
+void freeClientes(ListaClientes *l) //liberar a memória usada pela lista ao final do prog
+{
+    free(l->vet_clientes);
+    l->vet_clientes = NULL;
+    l->quantos_existem = 0;
+    l->capacidade = 0;
 }
 
-int adicionarCliente(ListaClientes *l, const Cliente *c) {
-    ensureCapacityClientes(l);
-    l->data[l->size++] = *c;
+int adicionarCliente(ListaClientes *l, const Cliente *c) //adiciona o cliente na próxima posição
+{
+    teste_de_capacidade_lista_clientes(l);
+    l->vet_clientes[l->quantos_existem++] = *c;
     return 0;
 }
 
-int removerClienteById(ListaClientes *l, int id) {
-    for (int i = 0; i < l->size; ++i) {
-        if (l->data[i].id == id) {
-            memmove(&l->data[i], &l->data[i+1], (l->size - i - 1) * sizeof(Cliente));
-            l->size--;
+int removerClienteById(ListaClientes *l, int id) //recebe a lista do vetor e o id e faz a remoção
+{
+    for (int i = 0; i < l->quantos_existem; ++i) 
+    {
+        if (l->vet_clientes[i].id == id) //achou??
+        {
+            //a lista n pode ter buracos
+            memmove(&l->vet_clientes[i], &l->vet_clientes[i+1], (l->quantos_existem - i - 1) * sizeof(Cliente));
+            //algo como:
+            //for (int j = i; j < l->qtd - 1; j++) 
+            //{
+                //l->vet_clientes[j] = l->vet_clientes[j + 1];
+            //}
+
+            l->quantos_existem--;
             return 0;
         }
     }
-    return -1;
+    return -1; //não achou
 }
 
-Cliente *buscarClienteById(ListaClientes *l, int id) {
-    for (int i = 0; i < l->size; ++i) {
-        if (l->data[i].id == id) return &l->data[i];
+Cliente *buscarClienteById(ListaClientes *l, int id) 
+{
+    for (int i = 0; i < l->quantos_existem; ++i) 
+    {
+        if (l->vet_clientes[i].id == id) return &l->vet_clientes[i];
     }
     return NULL;
 }
 
-void listarClientes(ListaClientes *l) {
-    printf("=== Lista de Clientes (%d) ===\n", l->size);
-    for (int i = 0; i < l->size; ++i) {
-        Cliente *c = &l->data[i];
+void listarClientes(ListaClientes *l) //servia antes do ncurses 
+{
+    printf("=== Lista de Clientes (%d) ===\n", l->quantos_existem);
+    for (int i = 0; i < l->quantos_existem; ++i) 
+    {
+        Cliente *c = &l->vet_clientes[i];
         printf("id=%d | nome=\"%s\" | cpf=%s | tel=%s\n", c->id, c->nome, c->cpf, c->telefone);
     }
 }
 
 /* retorna próximo id (max + 1) */
-int nextIdCliente(ListaClientes *l) {
+int ProximoIdCliente(ListaClientes *l) //entrega sempre o proximo id usado
+{
     int mx = 0;
-    for (int i = 0; i < l->size; ++i) if (l->data[i].id > mx) mx = l->data[i].id;
+    for (int i = 0; i < l->quantos_existem; ++i) if (l->vet_clientes[i].id > mx) mx = l->vet_clientes[i].id;
     return mx + 1;
 }
 
-int carregarClientesCSV(ListaClientes *l, const char *path) {
+int carregarClientesCSV(ListaClientes *l, const char *path) //Lê clientes do arquivo CSV e os coloca na lista.
+{
     FILE *f = fopen(path, "r");
     if (!f) return -1;
     char line[512];
-    while (fgets(line, sizeof(line), f)) {
+    while (fgets(line, sizeof(line), f)) 
+    {
         line[strcspn(line, "\r\n")] = 0;
         if (line[0] == '\0') continue;
         // id;nome;cpf;telefone
@@ -100,11 +123,13 @@ int carregarClientesCSV(ListaClientes *l, const char *path) {
     return 0;
 }
 
-int salvarClientesCSV(ListaClientes *l, const char *path) {
+int salvarClientesCSV(ListaClientes *l, const char *path) //Grava todos os clientes da lista no CSV.
+{
     FILE *f = fopen(path, "w");
     if (!f) return -1;
-    for (int i = 0; i < l->size; ++i) {
-        Cliente *c = &l->data[i];
+    for (int i = 0; i < l->quantos_existem; ++i) 
+    {
+        Cliente *c = &l->vet_clientes[i];
         fprintf(f, "%d;%s;%s;%s\n", c->id, c->nome, c->cpf, c->telefone);
     }
     fclose(f);
