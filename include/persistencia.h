@@ -5,13 +5,14 @@
 #include "produto.h"
 #include "pedido.h"
 
-void salvarClientesCSV();
-void carregarClientesCSV();
+// Funções de persistência centralizadas
+int carregarClientesCSV(ListaClientes *l, const char *path);
+int salvarClientesCSV(ListaClientes *l, const char *path);
 
-void salvarProdutosCSV();
-void carregarProdutosCSV();
+int carregarProdutosCSV(ListaProdutos *l, const char *path);
+int salvarProdutosCSV(ListaProdutos *l, const char *path);
 
-void salvarPedidosCSV();
-void carregarPedidosCSV();
+int carregarPedidosCSV(ListaPedidos *l, const char *path);
+int salvarPedidosCSV(ListaPedidos *l, const char *path);
 
 #endif
